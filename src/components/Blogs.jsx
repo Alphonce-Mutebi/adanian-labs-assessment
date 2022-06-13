@@ -1,6 +1,7 @@
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react'
 import { db } from '../firebaseConfig';
+import DeleteBlog from './DeleteBlog';
 
 export default function Blogs() {
     const [blogs, setBlogs] = useState([]);
@@ -35,6 +36,7 @@ export default function Blogs() {
                             <h2>{title}</h2>
                             <p>{createdAt.toDate().toDateString()}</p>
                             <h4>{description}</h4>
+                            <DeleteBlog id={id} imageUrl={imageUrl} />
                         </div>
                     </div>
                 </div>
