@@ -1,10 +1,15 @@
 import { collection, Timestamp, addDoc } from 'firebase/firestore'
 import React, { useState } from 'react'
 import  { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
-import { storage,db } from '../firebaseConfig';
+import { storage,db,auth } from '../firebaseConfig';
 import { toast } from 'react-toastify';
+import { useAuthState } from "react-firebase-hooks/auth";
+import { Link } from "react-router-dom";
+
 
 export default function AddBlog() {
+  const [user] = useAuthState(auth);
+
   const [formData, setFormData] = React.useState({
     title: '',
     description: '',
@@ -53,6 +58,10 @@ export default function AddBlog() {
           description: formData.description,
           imageUrl: url,
           createdAt: Timestamp.now().toDate(),
+          createdBy:user.displayName,
+          userId:user.uid,
+          likes:[],
+          comments:[]
         })
         .then(() => {
           toast('Blog added successfully', {type: "success"});
@@ -67,6 +76,15 @@ export default function AddBlog() {
   };
   return (
     <div className='border p-3 mt-3 bg-light' style={{position:"fixed"}}>
+      {!user ? (
+        <>
+          <h2>
+            <Link to="/signin">Login to create article</Link>
+          </h2>
+          Don't have an account? <Link to="/register">Signup</Link>
+        </>
+      ) : (
+        <>
       <h2>Create Blog</h2>
       <label htmlFor=''>Title</label>
       <input type='text' name='title' className='form-control' value={formData.title} onChange={(e) => handleChange(e)}/>
@@ -89,6 +107,8 @@ export default function AddBlog() {
     )}
 
       <button className='form-control btn-primary mt-2' onClick={handlePublish}>Publish</button>
+    </>
+    )}
     </div>
   )
 }
